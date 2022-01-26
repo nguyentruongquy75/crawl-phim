@@ -38,9 +38,9 @@ db.on("error", (err) => {
 const wait = async (time) =>
   new Promise((res, rej) => setTimeout(() => res(), time));
 
-link.forEach((item) => {
+link.forEach(async (item) => {
   for (let page = 1; page <= item.totalPage; page++) {
-    wait(1000);
+    await wait(1000);
     crawl.crawl(item.url + page, item.group);
   }
 });
