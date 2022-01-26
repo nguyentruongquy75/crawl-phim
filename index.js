@@ -45,14 +45,9 @@ link.forEach(async (item) => {
       {
         url: item.url + page,
         headers: {
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-          "Accept-Encoding": "gzip, deflate, br",
-          "accept-language": "en-US,en;q=0.9,ko;q=0.8",
-          "cache-control": "no-cache",
-          pragma: "no-cache",
+          Referer: "https://www.ssphim.net/",
           "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
         },
       },
       item.group
