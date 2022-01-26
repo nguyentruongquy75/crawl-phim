@@ -35,14 +35,13 @@ db.on("error", (err) => {
   console.log("DB connection error:", err.message);
 });
 
-link.forEach((item) => {
-  for (let page = 1; page <= item.totalPage; page++) {
-    crawl.crawl(item.url + page, item.group);
-  }
-});
-
 app.get("/", async (req, res) => {
-  res.json(result);
+  link.forEach((item) => {
+    for (let page = 1; page <= item.totalPage; page++) {
+      crawl.crawl(item.url + page, item.group);
+    }
+  });
+  res.json("ok");
 });
 
 app.listen(process.env.PORT || 3000);
