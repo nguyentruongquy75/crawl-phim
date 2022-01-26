@@ -40,8 +40,24 @@ const wait = async (time) =>
 
 link.forEach(async (item) => {
   for (let page = 1; page <= item.totalPage; page++) {
-    await wait(1000);
-    crawl.crawl(item.url + page, item.group);
+    await wait(5000);
+    crawl.crawl(
+      {
+        url: item.url + page,
+        headers: {
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+          "Accept-Encoding": "gzip, deflate, br",
+          "accept-language": "en-US,en;q=0.9,ko;q=0.8",
+          "cache-control": "no-cache",
+          pragma: "no-cache",
+          referer: "https://www.barneys.com/",
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+        },
+      },
+      item.group
+    );
   }
 });
 
