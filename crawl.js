@@ -19,12 +19,12 @@ const crawl = async (link, group) => {
       const name = $(ele).find(".item-block-title").text();
       const category = $(ele).find(".info-title-link").text();
 
-      request(url, (err, res, html) => {
+      request(url, async (err, res, html) => {
         const $ = cheerio.load(html);
         const watchUrl = baseUrl + $(".button_xemphim").attr().href;
         const shortDesc = $(".header-short-description p").html();
         const review = $("#review .w-richtext").html();
-        const trailer = $("#trailer iframe").attr().src;
+        const trailer = $("#trailer iframe").attr()?.src;
 
         const film = new Film({
           name,
@@ -37,7 +37,7 @@ const crawl = async (link, group) => {
           group,
         });
 
-        request(watchUrl, async (err, res, html) => {
+        await request(watchUrl, async (err, res, html) => {
           const $ = cheerio.load(html);
           const isMultipleEp = $(".episodes-list .collection-item").length
             ? true
@@ -70,9 +70,7 @@ const crawl = async (link, group) => {
           }
         });
 
-        setTimeout(() => {
-          film.save();
-        }, 1000);
+        film.save();
       });
     });
   });

@@ -35,12 +35,17 @@ db.on("error", (err) => {
   console.log("DB connection error:", err.message);
 });
 
+const wait = async (time) =>
+  new Promise((res, rej) => setTimeout(() => res(), time));
+
+link.forEach((item) => {
+  for (let page = 1; page <= item.totalPage; page++) {
+    wait(1000);
+    crawl.crawl(item.url + page, item.group);
+  }
+});
+
 app.get("/", async (req, res) => {
-  link.forEach((item) => {
-    for (let page = 1; page <= item.totalPage; page++) {
-      crawl.crawl(item.url + page, item.group);
-    }
-  });
   res.json("ok");
 });
 
