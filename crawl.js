@@ -19,59 +19,91 @@ const crawl = async (link, group) => {
       const name = $(ele).find(".item-block-title").text();
       const category = $(ele).find(".info-title-link").text();
 
-      request(url, async (err, res, html) => {
-        const $ = cheerio.load(html);
-        const watchUrl = baseUrl + $(".button_xemphim").attr().href;
-        const shortDesc = $(".header-short-description p").html();
-        const review = $("#review .w-richtext").html();
-        const trailer = $("#trailer iframe").attr()?.src;
-
-        const film = new Film({
-          name,
-          category,
-          image,
-          shortDesc,
-          review,
-          trailer,
-          ep: [],
-          group,
-        });
-
-        await request(watchUrl, async (err, res, html) => {
+      request(
+        {
+          url,
+          headers: {
+            Referer: "https://www.ssphim.net/",
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
+          },
+        },
+        async (err, res, html) => {
           const $ = cheerio.load(html);
-          const isMultipleEp = $(".episodes-list .collection-item").length
-            ? true
-            : false;
+          const watchUrl = baseUrl + $(".button_xemphim").attr().href;
+          const shortDesc = $(".header-short-description p").html();
+          const review = $("#review .w-richtext").html();
+          const trailer = $("#trailer iframe").attr()?.src;
 
-          if (isMultipleEp) {
-            $(".episodes-list .collection-item").each(async (index, ele) => {
-              const epName = $(ele).text();
-              const epLink = baseUrl + $(ele).find("a").attr().href;
+          const film = new Film({
+            name,
+            category,
+            image,
+            shortDesc,
+            review,
+            trailer,
+            ep: [],
+            group,
+          });
 
-              request(epLink, (err, res, html) => {
-                const $ = cheerio.load(html);
+          await request(
+            {
+              url: watchUrl,
+              headers: {
+                Referer: "https://www.ssphim.net/",
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
+              },
+            },
+            async (err, res, html) => {
+              const $ = cheerio.load(html);
+              const isMultipleEp = $(".episodes-list .collection-item").length
+                ? true
+                : false;
+
+              if (isMultipleEp) {
+                $(".episodes-list .collection-item").each(
+                  async (index, ele) => {
+                    const epName = $(ele).text();
+                    const epLink = baseUrl + $(ele).find("a").attr().href;
+
+                    request(
+                      {
+                        url: epLink,
+                        headers: {
+                          Referer: "https://www.ssphim.net/",
+                          "User-Agent":
+                            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
+                        },
+                      },
+                      (err, res, html) => {
+                        const $ = cheerio.load(html);
+                        const video = $(".w-iframe iframe").attr()?.src;
+                        const ep = new Ep({
+                          epName,
+                          video,
+                        });
+                        ep.save();
+                        film.ep.push(ep._id);
+                      }
+                    );
+                  }
+                );
+              } else {
                 const video = $(".w-iframe iframe").attr()?.src;
                 const ep = new Ep({
-                  epName,
+                  epName: "Full",
                   video,
                 });
                 ep.save();
                 film.ep.push(ep._id);
-              });
-            });
-          } else {
-            const video = $(".w-iframe iframe").attr()?.src;
-            const ep = new Ep({
-              epName: "Full",
-              video,
-            });
-            ep.save();
-            film.ep.push(ep._id);
-          }
-        });
+              }
+            }
+          );
 
-        film.save();
-      });
+          film.save();
+        }
+      );
     });
   });
 };
