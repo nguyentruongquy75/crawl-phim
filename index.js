@@ -40,7 +40,7 @@ const wait = async (time) =>
 
 link.forEach(async (item) => {
   for (let page = 1; page <= item.totalPage; page++) {
-    await wait(5000);
+    await wait(1000 * 60);
     crawl.crawl(
       {
         url: item.url + page,
@@ -51,7 +51,6 @@ link.forEach(async (item) => {
           "accept-language": "en-US,en;q=0.9,ko;q=0.8",
           "cache-control": "no-cache",
           pragma: "no-cache",
-          referer: "https://www.barneys.com/",
           "User-Agent":
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
         },
